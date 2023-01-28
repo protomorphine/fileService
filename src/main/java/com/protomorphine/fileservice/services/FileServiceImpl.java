@@ -6,6 +6,8 @@ import com.protomorphine.fileservice.model.entity.File;
 import com.protomorphine.fileservice.repository.FileRepository;
 import com.protomorphine.fileservice.services.interfaces.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,9 +31,6 @@ public class FileServiceImpl implements FileService {
         return fileMapper.toFileDto(file);
     }
 
-    /**
-     * @return
-     */
     @Override
     public List<FileDto> getAll() {
        return fileRepository
@@ -39,5 +38,15 @@ public class FileServiceImpl implements FileService {
                .stream()
                .map(fileMapper::toFileDto)
                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<FileDto> getPaged(Pageable pageable) {
+        return fileRepository.findAll(pageable).map(fileMapper::toFileDto);
+    }
+
+    @Override
+    public byte[] getContentById(UUID id) {
+        return fileRepository.findById(id).get().getContent();
     }
 }
